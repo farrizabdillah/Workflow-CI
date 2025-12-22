@@ -29,11 +29,6 @@ jobs:
         run: |
           echo "MLFLOW_TRACKING_URI=mlruns" >> $GITHUB_ENV
 
-      - name: Run mlflow project
-        run: |
-          cd Membangun_model
-          python modelling_tuning.py
-
       - name: Install Python dependencies
         run: |
           pip list
