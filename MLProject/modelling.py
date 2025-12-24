@@ -7,17 +7,16 @@ import mlflow.sklearn
 import os
 
 # ===============================
-# Path Dataset
+# Path Dataset & Database
 # ===============================
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(SCRIPT_DIR, "bank_marketing_preprocessed.csv")
 
+# Menggunakan SQLite agar tidak terjadi error folder mlruns korup di Windows/CI
+db_path = os.path.join(SCRIPT_DIR, "mlflow.db")
+tracking_uri = f"sqlite:///{db_path}"
+
 print(f"[INFO] Memuat data dari: {DATA_PATH}")
-
-# Cek apakah file ada sebelum membaca
-if not os.path.exists(DATA_PATH):
-    raise FileNotFoundError(f"File dataset tidak ditemukan di: {DATA_PATH}")
-
 df = pd.read_csv(DATA_PATH)
 
 # ===============================
@@ -28,53 +27,35 @@ X = df.drop(TARGET_COL, axis=1)
 y = df[TARGET_COL]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 # ===============================
 # MLflow Setup
 # ===============================
-# Setup URI dan Experiment dimatikan di sini karena sudah diatur 
-# lewat Environment Variable di GitHub Actions (main.yml).
-# Jangan di-uncomment agar tidak konflik.
-# mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "mlruns"))
-# mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
+# Jika dijalankan di GitHub Actions, ambil URI dari env, jika tidak gunakan SQLite lokal
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", tracking_uri))
+mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
 
 # ===============================
 # Training & Logging
 # ===============================
-
-# PERBAIKAN: Menambahkan nested=True
-# Ini penting agar script bisa berjalan di dalam 'mlflow run' tanpa error "Run not found".
-# Kita juga menghapus 'run_name' di sini karena run name sudah diatur oleh parent run.
-with mlflow.start_run(nested=True):
+# nested=True wajib ada agar aman saat dijalankan via 'mlflow run'
+with mlflow.start_run(run_name="RandomForest_BankMarketing_Basic_Farriz", nested=True):
 
     print("[INFO] Training RandomForest...")
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
-
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
 
-    # ===============================
     # MLflow Logging
-    # ===============================
     mlflow.log_param("n_estimators", 100)
     mlflow.log_param("model_type", "RandomForest")
-
     mlflow.log_metric("accuracy", acc)
 
-    mlflow.sklearn.log_model(
-        model,
-        artifact_path="model"
-    )
+    # Logging model
+    mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
 
     print(f"[INFO] Accuracy: {acc:.4f}")
