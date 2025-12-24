@@ -33,15 +33,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ===============================
 # MLflow Setup
 # ===============================
-# Jika dijalankan di GitHub Actions, ambil URI dari env, jika tidak gunakan SQLite lokal
-mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", tracking_uri))
+if not os.getenv("MLFLOW_TRACKING_URI"):
+    db_path = os.path.join(SCRIPT_DIR, "mlflow.db")
+    mlflow.set_tracking_uri(f"sqlite:///{db_path}")
+
 mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
 
-# ===============================
-# Training & Logging
-# ===============================
-# nested=True wajib ada agar aman saat dijalankan via 'mlflow run'
-with mlflow.start_run(run_name="RandomForest_BankMarketing_Basic_Farriz", nested=True):
+with mlflow.start_run(nested=True):
 
     print("[INFO] Training RandomForest...")
     model = RandomForestClassifier(n_estimators=100, random_state=42)
