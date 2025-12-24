@@ -33,8 +33,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ===============================
 # MLflow Setup
 # ===============================
-mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "mlruns"))
-mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
+# mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "mlruns"))
+# mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
 
 # ===============================
 # Training & Logging

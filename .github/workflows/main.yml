@@ -31,12 +31,11 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip list
-          pip install mlflow
+          python -m pip install --upgrade pip
+          pip install mlflow pandas scikit-learn
 
       - name: Run MLflow Project
         run: |
-          # Gunakan --env-manager local sebagai pengganti --no-conda
           mlflow run MLProject/ --env-manager local
           
       - name: Upload to Google Drive
