@@ -7,14 +7,10 @@ import mlflow.sklearn
 import os
 
 # ===============================
-# Path Dataset & Database
+# Path Dataset
 # ===============================
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(SCRIPT_DIR, "bank_marketing_preprocessed.csv")
-
-# Menggunakan SQLite agar tidak terjadi error folder mlruns korup di Windows/CI
-db_path = os.path.join(SCRIPT_DIR, "mlflow.db")
-tracking_uri = f"sqlite:///{db_path}"
 
 print(f"[INFO] Memuat data dari: {DATA_PATH}")
 df = pd.read_csv(DATA_PATH)
@@ -33,12 +29,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ===============================
 # MLflow Setup
 # ===============================
-if not os.getenv("MLFLOW_TRACKING_URI"):
-    db_path = os.path.join(SCRIPT_DIR, "mlflow.db")
-    mlflow.set_tracking_uri(f"sqlite:///{db_path}")
-
+# HAPUS mlflow.set_tracking_uri manual agar mengambil dari ENV github
 mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
 
+# ===============================
+# Training & Logging
+# ===============================
+# Gunakan nested=True agar sinkron dengan ID dari 'mlflow run'
 with mlflow.start_run(nested=True):
 
     print("[INFO] Training RandomForest...")
@@ -48,12 +45,11 @@ with mlflow.start_run(nested=True):
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
 
-    # MLflow Logging
+    # Logging
     mlflow.log_param("n_estimators", 100)
-    mlflow.log_param("model_type", "RandomForest")
     mlflow.log_metric("accuracy", acc)
 
-    # Logging model
+    # Simpan Model
     mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
 
     print(f"[INFO] Accuracy: {acc:.4f}")

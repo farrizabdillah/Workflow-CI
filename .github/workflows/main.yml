@@ -32,8 +32,8 @@ jobs:
 
       - name: Run MLflow Project
         env:
-          # Gunakan path relatif sederhana untuk tracking
-          MLFLOW_TRACKING_URI: "mlruns"
+          # Gunakan jalur absolut ke workspace GitHub
+          MLFLOW_TRACKING_URI: "file://${{ github.workspace }}/mlruns"
           MLFLOW_EXPERIMENT_NAME: "RandomForest_BankMarketing_Basic_Farriz"
         run: |
           rm -rf mlruns
