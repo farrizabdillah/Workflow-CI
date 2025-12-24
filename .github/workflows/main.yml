@@ -36,6 +36,7 @@ jobs:
 
       - name: Run MLflow Project
         env:
+          MLFLOW_TRACKING_URI: "mlruns"
           MLFLOW_EXPERIMENT_NAME: "RandomForest_BankMarketing_Basic_Farriz"
         run: |
           mlflow run MLProject/ --env-manager local
