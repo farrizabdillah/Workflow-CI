@@ -32,9 +32,11 @@ jobs:
 
       - name: Run MLflow Project
         env:
-          MLFLOW_TRACKING_URI: "sqlite:////home/runner/work/Workflow-CI/Workflow-CI/mlflow.db"
+          # Gunakan path relatif sederhana untuk tracking
+          MLFLOW_TRACKING_URI: "mlruns"
           MLFLOW_EXPERIMENT_NAME: "RandomForest_BankMarketing_Basic_Farriz"
         run: |
+          rm -rf mlruns
           mlflow run MLProject/ --env-manager local
 
       - name: Upload to Google Drive
