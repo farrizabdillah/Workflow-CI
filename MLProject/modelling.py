@@ -39,7 +39,7 @@ mlflow.set_experiment("RandomForest_BankMarketing_Basic_Farriz")
 # ===============================
 # Training & Logging
 # ===============================
-with mlflow.start_run(run_name="RF_BankMarketing_Basic"):
+with mlflow.start_run(run_name="RandomForest_BankMarketing_Basic_Farriz"):
 
     print("[INFO] Training RandomForest...")
     model = RandomForestClassifier(
