@@ -29,15 +29,15 @@ jobs:
         run: |
           echo "MLFLOW_TRACKING_URI=mlruns" >> $GITHUB_ENV
 
-      - name: Run MLflow Project
-        run: |
-          pip install mlflow
-          mlflow run MLProject/ --no-conda
-
       - name: Install Python dependencies
         run: |
           pip list
 
+      - name: Run MLflow Project
+        run: |
+          # Gunakan --env-manager local sebagai pengganti --no-conda
+          mlflow run MLProject/ --env-manager local
+          
       - name: Upload to Google Drive
         run: |
           echo "Simulated upload to Google Drive (skipped)"
