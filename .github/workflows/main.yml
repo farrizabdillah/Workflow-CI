@@ -35,6 +35,8 @@ jobs:
           pip install mlflow pandas scikit-learn
 
       - name: Run MLflow Project
+        env:
+          MLFLOW_EXPERIMENT_NAME: "RandomForest_BankMarketing_Basic_Farriz"
         run: |
           mlflow run MLProject/ --env-manager local
           
